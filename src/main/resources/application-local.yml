@@ -1,0 +1,8 @@
+server:
+  port: 9999
+#default=8080
+
+# internationalized
+spring:
+  messages:
+    basename: messages
