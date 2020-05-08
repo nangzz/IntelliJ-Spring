@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dao.UserDaoService;
+import com.example.demo.dao.UserDaoServiceImpl;
 import com.example.demo.entity.User;
 import com.example.demo.exception.UserNotFoundException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -10,10 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
     @Autowired
-    UserDaoService service;
+    UserDaoServiceImpl service;
 
 //    public List<User> list = service.getUserList();
 
@@ -118,28 +121,35 @@ public class UserController {
 
     // 사용자 등록
     @PostMapping("/users")
-    public void createUser(@RequestBody User user) {
-        List<User> list = service.getUserList();
-        list.add(user);
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) { // Mapping 반환도 가능
+        User createUser = service.createUser(user);
+
+        URI location = ServletUriComponentsBuilder
+                            .fromCurrentRequest()
+                            .path("/{id}") // url에 {id} 안써줘도 됨
+                            .buildAndExpand(createUser.getId())
+                            .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 
     // 사용자 삭제
     @DeleteMapping("/users/{id}")
     public void deleteUser(@PathVariable Integer id) {
-        List<User> list = service.getUserList();
-        list.remove(id-1);
+        User user = service.removeUser(id);
     }
 
     // 사용자 수정
-    @PutMapping("/users/{id}")
-    public void updateUser(@PathVariable Integer id, @RequestBody User userDetail) {
-        User updateuser = service.getUser(id);
-        updateuser.setName(userDetail.getName());
-        updateuser.setPassword(userDetail.getPassword());
-        updateuser.setJoinDate(userDetail.getJoinDate());
-        updateuser.setSsn(userDetail.getSsn());
-//        return updateuser;
+    @PutMapping("/users")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        User createUser = service.modifyUser(user);
 
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createUser.getId())
+                .toUri();
 
+        return ResponseEntity.created(location).build();
     }
 }

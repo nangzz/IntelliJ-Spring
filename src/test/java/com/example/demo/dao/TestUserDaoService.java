@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TestUserDaoService {
 
-    UserDaoService service = new UserDaoService();
+    UserDaoServiceImpl service = new UserDaoServiceImpl();
 
     @Test
     public void testUserList() {

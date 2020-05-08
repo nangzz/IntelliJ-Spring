@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Data // 세터게터 , toString() 따로 안만들어도 이 어노테이션이 있으면 자동으로 있다고 처리 됨
@@ -16,11 +18,15 @@ import java.util.Date;
 public class User {
 
     private Integer id;
+
+    @NotNull
     private String name;
     private Date joinDate;
 //    private String joinDate;
 
 //    @JsonIgnore
+    @NotNull
+    @Size(min=6, max=16)
     private String password;
 //    @JsonIgnore
     private String ssn;
